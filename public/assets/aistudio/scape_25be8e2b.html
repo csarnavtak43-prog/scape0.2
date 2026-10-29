@@ -1,0 +1,2270 @@
+ <!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScrapEx - Buy & Sell Scrap Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts (Inter) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .ticker-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-move {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+    .ticker-move:hover { animation-play-state: paused; }
+    @keyframes ticker {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+    input[type="file"]::file-selector-button {
+      border: 0;
+      padding: 0.45rem 0.75rem;
+      margin-right: 0.6rem;
+      border-radius: 0.6rem;
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+  <!-- LIVE MARKET TICKER -->
+  <div class="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2 text-emerald-400 font-semibold shrink-0">
+        <i class="fa-solid me-1 fa-chart-line"></i> DAILY SCRAP RATES:
+      </div>
+      <div class="ticker-wrap flex-1 ml-4 overflow-hidden">
+        <div class="ticker-move text-slate-300 font-medium">
+          <span class="mx-4">🔶 Copper Wire: <strong class="text-white">₹450/kg</strong> <span class="text-emerald-400 text-xs">▲ +2.4%</span></span>
+          <span class="mx-4">🔩 Aluminium Sheet: <strong class="text-white">₹120/kg</strong> <span class="text-red-400 text-xs">▼ -0.5%</span></span>
+          <span class="mx-4">⚙️ Heavy Iron: <strong class="text-white">₹52/kg</strong> <span class="text-emerald-400 text-xs">▲ +1.1%</span></span>
+          <span class="mx-4">🟡 Brass Utensils: <strong class="text-white">₹310/kg</strong> <span class="text-emerald-400 text-xs">▲ +0.8%</span></span>
+          <span class="mx-4">💻 Mixed E-Waste: <strong class="text-white">₹210/kg</strong> <span class="text-emerald-400 text-xs">▲ +3.2%</span></span>
+          <span class="mx-4">📦 Cardboard/Paper: <strong class="text-white">₹12/kg</strong> <span class="text-slate-400 text-xs">► 0.0%</span></span>
+          <!-- Duplicate for seamless looping -->
+          <span class="mx-4">🔶 Copper Wire: <strong class="text-white">₹450/kg</strong> <span class="text-emerald-400 text-xs">▲ +2.4%</span></span>
+          <span class="mx-4">🔩 Aluminium Sheet: <strong class="text-white">₹120/kg</strong> <span class="text-red-400 text-xs">▼ -0.5%</span></span>
+          <span class="mx-4">⚙️ Heavy Iron: <strong class="text-white">₹52/kg</strong> <span class="text-emerald-400 text-xs">▲ +1.1%</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER NAVIGATION -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#home" class="flex items-center gap-2 group">
+        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white text-xl shadow-md group-hover:bg-brand-700 transition">
+          <i class="fa-solid fa-recycle"></i>
+        </div>
+        <div>
+          <span class="text-xl font-black text-slate-900 tracking-tight">Scrap<span class="text-brand-600">Ex</span></span>
+          <span class="block text-[10px] uppercase tracking-widest text-slate-400 -mt-1 font-semibold">Trade & Recycle</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 font-medium text-slate-600 text-sm">
+        <a href="#buy" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-store text-xs"></i> Buy Scrap
+        </a>
+        <a href="#sell" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-truck-ramp-box text-xs"></i> Sell Scrap
+        </a>
+        <a href="#myOrders" onclick="renderMyOrders()" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check text-xs"></i> My Activity
+        </a>
+      </nav>
+
+      <!-- User & Cart Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Cart Button -->
+        <button onclick="toggleCartDrawer()" class="relative p-2 text-slate-700 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition" title="Shopping Cart">
+          <i class="fa-solid fa-cart-shopping text-lg"></i>
+          <span id="cartBadge" class="absolute -top-1 -right-1 bg-brand-600 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+        </button>
+
+        <!-- Dynamic User Status -->
+        <div id="authNavContainer" class="flex items-center gap-2">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Admin Panel -->
+        <button onclick="openAdminLogin()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition" title="Admin Panel">
+          <i class="fa-solid fa-user-shield"></i> Admin
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileNav()" class="md:hidden p-2 text-slate-700 rounded-lg hover:bg-slate-100">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileNav" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2">
+      <a href="#buy" onclick="toggleMobileNav()" class="block py-2 text-slate-700 font-medium"><i class="fa-solid fa-store w-6"></i> Buy Scrap</a>
+      <a href="#sell" onclick="toggleMobileNav()" class="block py-2 text-slate-700 font-medium"><i class="fa-solid fa-truck-ramp-box w-6"></i> Sell Scrap</a>
+      <a href="#myOrders" onclick="toggleMobileNav(); renderMyOrders()" class="block py-2 text-slate-700 font-medium"><i class="fa-solid fa-list-check w-6"></i> My Activity</a>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="home" class="relative bg-gradient-to-br from-slate-900 via-slate-800 to-brand-950 text-white py-16 md:py-24 overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6 text-center md:text-left">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-semibold uppercase tracking-wider">
+          <i class="fa-solid fa-leaf"></i> Eco-Friendly Recycling Network
+        </span>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+          Turn Your Industrial & Household Scrap Into <span class="text-brand-400 underline decoration-brand-500/50">Instant Cash</span>
+        </h1>
+        <p class="text-slate-300 text-base md:text-lg max-w-xl">
+          Connect directly with verified scrap recyclers, traders, and buyers. Real-time rates, seamless doorstep pickups, and transparent weighing.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-2">
+          <a href="#sell" class="w-full sm:w-auto px-6 py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition text-center flex items-center justify-center gap-2">
+            <i class="fa-solid fa-truck-pickup"></i> Schedule Scrap Pickup
+          </a>
+          <a href="#buy" class="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-xl transition text-center flex items-center justify-center gap-2">
+            <i class="fa-solid fa-magnifying-glass"></i> Explore Listings
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Visual Stats Card -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="glass-card p-6 rounded-2xl border border-white/20 text-slate-800 shadow-xl">
+          <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center text-xl mb-3">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <p class="text-3xl font-black text-slate-900">12,500+</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Metric Tons Recycled</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl border border-white/20 text-slate-800 shadow-xl">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mb-3">
+            <i class="fa-solid fa-handshake"></i>
+          </div>
+          <p class="text-3xl font-black text-slate-900">4,800+</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Verified Traders</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl border border-white/20 text-slate-800 shadow-xl">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-3">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+          </div>
+          <p class="text-3xl font-black text-slate-900">100%</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Instant Cash & UPI</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl border border-white/20 text-slate-800 shadow-xl">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mb-3">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <p class="text-3xl font-black text-slate-900">4.9 / 5</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Trader Rating</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUY SCRAP MARKETPLACE SECTION -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    
+    <section id="buy" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div>
+          <span class="text-xs font-bold text-brand-600 uppercase tracking-widest">Marketplace</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">🛒 Browse Scrap Materials</h2>
+          <p class="text-slate-500 text-sm mt-1">Directly purchase sorted scrap metals, e-waste, and paper bulk directly from local sellers.</p>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="relative min-w-[220px]">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="searchInput" oninput="filterScrapListings()" placeholder="Search copper, iron, location..." 
+                   class="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <select id="sortSelect" onchange="filterScrapListings()" class="py-2 px-3 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            <option value="featured">Featured First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilters">
+        <button onclick="setCategoryFilter('all')" class="cat-btn active px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-brand-600 text-white shadow-sm" data-cat="all">All Scrap</button>
+        <button onclick="setCategoryFilter('metal')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-100" data-cat="metal">Non-Ferrous Metals</button>
+        <button onclick="setCategoryFilter('ferrous')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-100" data-cat="ferrous">Iron & Steel</button>
+        <button onclick="setCategoryFilter('ewaste')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-100" data-cat="ewaste">Electronic Waste</button>
+        <button onclick="setCategoryFilter('paper')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-100" data-cat="paper">Paper & Plastic</button>
+      </div>
+
+      <!-- Listings Grid Container -->
+      <div id="scrapGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic Cards Inserted via JS -->
+      </div>
+    </section>
+
+    <!-- SELL SCRAP SECTION -->
+    <section id="sell" class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+      <div class="grid lg:grid-cols-12 gap-0">
+        
+        <!-- Left Banner -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-brand-800 to-slate-900 p-8 lg:p-12 text-white flex flex-col justify-between">
+          <div class="space-y-4">
+            <span class="px-3 py-1 bg-white/10 text-brand-300 text-xs font-bold rounded-full uppercase tracking-wider">Instant Selling</span>
+            <h3 class="text-2xl sm:text-3xl font-extrabold">Sell Scrap Material</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              Fill out your scrap details. Our pickup truck team will arrive, weigh your material with digital scales, and issue instant cash or UPI payment on the spot.
+            </p>
+
+            <ul class="space-y-3 text-xs sm:text-sm text-slate-200 pt-4">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-brand-400 text-base"></i> Verified digital weighing scale</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-brand-400 text-base"></i> Free doorstep pickup on bulk items (>20kg)</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-brand-400 text-base"></i> Immediate live payout upon collection</li>
+            </ul>
+          </div>
+
+          <div class="pt-8 border-t border-white/10 mt-8">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-400 font-medium">Need immediate seller support?</p>
+                <p class="text-sm font-bold text-white">+91 1800-SCRAP-EX (Toll Free)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Form -->
+        <div class="lg:col-span-7 p-6 sm:p-10">
+          <form id="sellForm" onsubmit="handleSellSubmit(event)" class="space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Scrap Material Category & Name</label>
+              <input type="text" id="material" required placeholder="e.g., Heavy Copper Wires, Industrial Motor Scrap" 
+                     class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Estimated Quantity (kg)</label>
+                <input type="number" id="weight" required min="1" step="0.5" placeholder="50" oninput="calculateSellEstimate()"
+                       class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Asking Rate (₹ / kg)</label>
+                <input type="number" id="sellPrice" required min="1" placeholder="450" oninput="calculateSellEstimate()"
+                       class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+              </div>
+            </div>
+
+            <!-- Price Estimate Calculation Display -->
+            <div id="estimateBox" class="hidden p-4 rounded-xl bg-brand-50 border border-brand-200 flex items-center justify-between">
+              <div>
+                <p class="text-xs text-brand-800 font-medium">Estimated Total Selling Payout:</p>
+                <p class="text-xs text-slate-500">Subject to digital scale verification during pickup</p>
+              </div>
+              <p class="text-xl font-black text-brand-700">₹<span id="estimatedTotalDisplay">0</span></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pickup Address & City</label>
+              <input type="text" id="address" required placeholder="Full street address, landmark, Mumbai / Pune" 
+                     class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Material Details & Condition</label>
+              <textarea id="details" rows="3" placeholder="Describe quality, clean/mixed state, insulation status, packaging..."
+                        class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Scrap Photo</label>
+              <input type="file" id="sellPhoto" accept="image/*"
+                     class="w-full px-3 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl">
+              <p class="text-[10px] text-slate-400 mt-1">Add a clear photo of the scrap material • JPG/PNG/WebP</p>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Publish Scrap Listing & Request Pickup
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MY ORDERS / ACTIVITY SECTION -->
+    <section id="myOrders" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900">📋 My Dashboard Activity</h3>
+          <p class="text-xs text-slate-500">Track your submitted scrap listings and placed pickup orders</p>
+        </div>
+        <button onclick="renderMyOrders()" class="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+          <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- My Orders -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+            <i class="fa-solid fa-cart-check text-brand-600"></i> Scrap Purchases / Orders
+          </h4>
+          <div id="myPurchasesList" class="space-y-3 text-xs">
+            <!-- Dynamic order history -->
+          </div>
+        </div>
+
+        <!-- My Published Scrap Listings -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+            <i class="fa-solid fa-box-open text-blue-600"></i> My Scrap Listings
+          </h4>
+          <div id="myListingsContainer" class="space-y-3 text-xs">
+            <!-- Dynamic sales listing -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 text-white">
+          <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-recycle"></i>
+          </div>
+          <span class="text-lg font-bold tracking-tight">ScrapEx</span>
+        </div>
+        <p class="leading-relaxed">India's leading circular economy scrap trading platform connecting bulk suppliers with certified metal foundries and eco-recyclers.</p>
+      </div>
+
+      <div>
+        <h5 class="text-white font-bold mb-3 uppercase tracking-wider">Quick Links</h5>
+        <ul class="space-y-2">
+          <li><a href="#buy" class="hover:text-brand-400 transition">Buy Scrap Bulk</a></li>
+          <li><a href="#sell" class="hover:text-brand-400 transition">Sell Doorstep Scrap</a></li>
+          <li><a href="#home" class="hover:text-brand-400 transition">Live Rates Ticker</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-white font-bold mb-3 uppercase tracking-wider">Scrap Categories</h5>
+        <ul class="space-y-2">
+          <li><a href="#buy" onclick="setCategoryFilter('metal')" class="hover:text-brand-400 transition">Copper & Brass Wire</a></li>
+          <li><a href="#buy" onclick="setCategoryFilter('ferrous')" class="hover:text-brand-400 transition">Heavy Iron & Steel</a></li>
+          <li><a href="#buy" onclick="setCategoryFilter('ewaste')" class="hover:text-brand-400 transition">Computers & Circuit Boards</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-white font-bold mb-3 uppercase tracking-wider">Recycling Commitment</h5>
+        <p class="leading-relaxed mb-3">100% compliant e-waste handling and zero-landfill metal circularity.</p>
+        <p class="text-slate-500">© 2026 ScrapEx Trading Corp. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SHOPPING CART SLIDE-OVER DRAWER -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div onclick="toggleCartDrawer()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"></div>
+
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col">
+        
+        <!-- Cart Drawer Header -->
+        <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-cart-shopping text-brand-400"></i>
+            <h2 class="text-lg font-bold">Your Scrap Cart</h2>
+          </div>
+          <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-4" id="cartDrawerItems">
+          <!-- Dynamic Items -->
+        </div>
+
+        <!-- Cart Drawer Footer / Checkout -->
+        <div class="p-5 border-t border-slate-200 bg-slate-50 space-y-4">
+          <div class="space-y-1.5 text-sm">
+            <div class="flex justify-between text-slate-600">
+              <span>Subtotal:</span>
+              <span class="font-semibold">₹<span id="cartSubtotal">0</span></span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Estimated Pickup / Logistics Fee:</span>
+              <span class="text-brand-600 font-semibold">FREE</span>
+            </div>
+            <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+              <span>Total Payable Amount:</span>
+              <span class="text-brand-600">₹<span id="cartTotal">0</span></span>
+            </div>
+          </div>
+
+          <button onclick="openCheckoutModal()" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+            Proceed to Schedule Pickup & Checkout <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (Login & Register Tabs) -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+      
+      <!-- Modal Header / Tabs -->
+      <div class="flex border-b border-slate-200 bg-slate-50">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-3.5 text-sm font-bold text-brand-600 border-b-2 border-brand-600">
+          🔐 Login
+        </button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-700">
+          📝 Register Account
+        </button>
+        <button onclick="closeAuthModal()" class="px-4 text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <!-- LOGIN FORM -->
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+            <input type="email" id="loginEmail" required placeholder="user@example.com" class="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition">
+            Login
+          </button>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="space-y-3 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name</label>
+            <input type="text" id="registerName" required placeholder="Rajesh Kumar" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email</label>
+            <input type="email" id="registerEmail" required placeholder="rajesh@example.com" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Phone Number</label>
+            <input type="tel" id="registerPhone" required placeholder="9876543210" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+            <input type="password" id="registerPassword" required placeholder="••••••••" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Confirm Password</label>
+            <input type="password" id="confirmPassword" required placeholder="••••••••" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Profile Photo</label>
+            <input type="file" id="registerPhoto" accept="image/*"
+              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl bg-slate-50">
+            <p class="text-[10px] text-slate-400 mt-1">Optional • JPG/PNG/WebP</p>
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition">
+            Create Trader Account
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="adminLoginModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-brand-400"></i><h3 class="font-bold">Admin Login</h3></div>
+        <button onclick="closeAdminLogin()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleAdminLogin(event)" class="p-6 space-y-4">
+        <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Username</label><input id="adminUsername" required value="admin" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"></div>
+        <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label><input id="adminPassword" type="password" required placeholder="Enter admin password" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"></div>
+        <p class="text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl">Demo credentials: <b>admin</b> / <b>admin123</b></p>
+        <button class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl">Login to Admin Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL MODAL -->
+  <div id="adminPanel" class="fixed inset-0 z-[55] hidden bg-slate-100 overflow-y-auto">
+    <div class="min-h-screen">
+      <header class="sticky top-0 z-10 bg-slate-950 text-white border-b border-slate-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center"><i class="fa-solid fa-user-shield"></i></div><div><h2 class="font-black">ScrapEx Admin Panel</h2><p class="text-[10px] text-slate-400 uppercase tracking-widest">Management Dashboard</p></div></div>
+          <button onclick="closeAdminPanel()" class="px-3 py-2 text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20"><i class="fa-solid fa-arrow-left"></i> Back to Website</button>
+        </div>
+      </header>
+
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"><p class="text-xs text-slate-500">Listings</p><p id="adminStatListings" class="text-3xl font-black text-brand-600">0</p></div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"><p class="text-xs text-slate-500">Orders</p><p id="adminStatOrders" class="text-3xl font-black text-blue-600">0</p></div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"><p class="text-xs text-slate-500">Registered Users</p><p id="adminStatUsers" class="text-3xl font-black text-purple-600">0</p></div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"><p class="text-xs text-slate-500">Order Value</p><p id="adminStatRevenue" class="text-3xl font-black text-amber-600">₹0</p></div>
+        </div>
+
+        <!-- ADMIN TABLES -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 border-b border-slate-200">
+            <h3 class="font-bold text-lg">📊 Admin Management Tables</h3>
+            <p class="text-xs text-slate-500 mt-1">Manage Login, Registered Users, Buy/Orders, Marketplace Listings, and Sale Scrap records from one place.</p>
+          </div>
+
+          <div class="p-4 border-b border-slate-200 flex flex-wrap gap-2">
+            <button onclick="openAdminDataModal('login')" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white hover:bg-brand-700 shadow-sm">
+              ➕ Add Data
+            </button>
+            <button onclick="showAdminTable('loginTable')" class="admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white">
+              🔐 Login
+            </button>
+            <button onclick="showAdminTable('registeredTable')" class="admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200">
+              👥 Registered
+            </button>
+            <button onclick="showAdminTable('buyTable')" class="admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200">
+              🛒 Buy / Orders
+            </button>
+            <button onclick="showAdminTable('listingTable')" class="admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200">
+              📦 Listings
+            </button>
+            <button onclick="showAdminTable('saleTable')" class="admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200">
+              💰 Sale Scrap
+            </button>
+          </div>
+
+          <!-- LOGIN TABLE -->
+          <div id="loginTable" class="admin-data-table p-5">
+            <h4 class="font-bold mb-3">🔐 Login Records</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 uppercase">
+                  <tr>
+                    <th class="p-3">#</th><th class="p-3">Email</th><th class="p-3">User</th><th class="p-3">Login Status</th><th class="p-3">Date</th><th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminLoginTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- REGISTERED TABLE -->
+          <div id="registeredTable" class="admin-data-table p-5 hidden">
+            <h4 class="font-bold mb-3">👥 Registered Users</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 uppercase">
+                  <tr>
+                    <th class="p-3">#</th><th class="p-3">Photo</th><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Phone</th><th class="p-3">Status</th><th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminRegisteredTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- BUY / ORDERS TABLE -->
+          <div id="buyTable" class="admin-data-table p-5 hidden">
+            <h4 class="font-bold mb-3">🛒 Buy / Orders</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 uppercase">
+                  <tr>
+                    <th class="p-3">Order ID</th><th class="p-3">Photo</th><th class="p-3">Date</th><th class="p-3">Items</th><th class="p-3">Amount</th><th class="p-3">Address</th><th class="p-3">Status</th><th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBuyTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LISTINGS TABLE -->
+          <div id="listingTable" class="admin-data-table p-5 hidden">
+            <h4 class="font-bold mb-3">📦 Marketplace Listings</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 uppercase">
+                  <tr>
+                    <th class="p-3">ID</th><th class="p-3">Photo</th><th class="p-3">Material</th><th class="p-3">Seller</th><th class="p-3">Price/kg</th><th class="p-3">Available</th><th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminListingTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SALE SCRAP TABLE -->
+          <div id="saleTable" class="admin-data-table p-5 hidden">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <div>
+                <h4 class="font-bold">💰 Sale Scrap Records</h4>
+                <p class="text-xs text-slate-500 mt-1">Manage scrap submitted by sellers with quantity, rate, payout, pickup address and status.</p>
+              </div>
+              <span id="adminSaleCount" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">0 Sales</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 uppercase">
+                  <tr>
+                    <th class="p-3">Sale ID</th><th class="p-3">Photo</th><th class="p-3">Date</th><th class="p-3">Seller</th>
+                    <th class="p-3">Material</th><th class="p-3">Qty</th><th class="p-3">Rate/kg</th>
+                    <th class="p-3">Payout</th><th class="p-3">Address</th><th class="p-3">Status</th><th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminSaleTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ADMIN ADD OPERATION DATA MODAL -->
+  <div id="adminDataModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base">➕ Admin Add Operation Data</h3>
+          <p class="text-[10px] text-slate-400 mt-1">Add Login, Registration, Buy or Sale records</p>
+        </div>
+        <button onclick="closeAdminDataModal()" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="adminDataForm" onsubmit="saveAdminOperationData(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Operation Type</label>
+          <select id="adminDataType" onchange="renderAdminDataFields()" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            <option value="login">🔐 Login Data</option>
+            <option value="registered">👥 Registration Data</option>
+            <option value="buy">🛒 Buy / Order Data</option>
+            <option value="sale">💰 Sale Scrap Data</option>
+          </select>
+        </div>
+
+        <div id="adminDataFields" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAdminDataModal()" class="flex-1 py-3 border border-slate-300 rounded-xl font-bold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold">
+            <i class="fa-solid fa-plus"></i> Add Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+        <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-truck-fast text-brand-400"></i> Schedule Scrap Delivery / Pickup</h3>
+        <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleCheckoutSubmit(event)" class="p-6 space-y-4 text-xs sm:text-sm">
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Full Delivery Address</label>
+          <input type="text" id="checkoutAddress" required placeholder="Factory #12, MIDC Industrial Area, Mumbai" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Preferred Date</label>
+            <input type="date" id="checkoutDate" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Time Slot</label>
+            <select id="checkoutSlot" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+              <option>10:00 AM - 01:00 PM</option>
+              <option>02:00 PM - 06:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Order / Material Photo</label>
+          <input type="file" id="checkoutPhoto" accept="image/*"
+                 class="w-full px-3 py-2.5 border border-slate-300 rounded-xl bg-slate-50">
+          <p class="text-[10px] text-slate-400 mt-1">Optional • Attach a photo for the buy/order record.</p>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Payment Method</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="p-3 border border-slate-300 rounded-xl flex items-center gap-2 cursor-pointer hover:border-brand-500">
+              <input type="radio" name="payType" value="Cash on Pickup" checked> Cash on Pickup
+            </label>
+            <label class="p-3 border border-slate-300 rounded-xl flex items-center gap-2 cursor-pointer hover:border-brand-500">
+              <input type="radio" name="payType" value="Instant UPI"> Instant UPI / Bank
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg transition">
+          Confirm Order Pickup
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    /* Default Initial Scrap Marketplace Items */
+    const DEFAULT_SCRAP_ITEMS = [
+      {
+        id: 's1',
+        title: '🔶 Heavy Copper Wire Scrap',
+        category: 'metal',
+        price: 450,
+        availableKg: 250,
+        location: 'Mumbai, MH',
+        seller: 'Raj Scrap Traders',
+        rating: 4.8,
+        image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        id: 's2',
+        title: '🔩 Aluminium Extrusion Scrap',
+        category: 'metal',
+        price: 120,
+        availableKg: 500,
+        location: 'Pune, MH',
+        seller: 'Green Scrap Pvt Ltd',
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        id: 's3',
+        title: '⚙️ Industrial Iron Melting Scrap',
+        category: 'ferrous',
+        price: 52,
+        availableKg: 1200,
+        location: 'Thane, MH',
+        seller: 'Metro Metal Scrap',
+        rating: 4.6,
+        image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        id: 's4',
+        title: '📦 Corrugated Paper & Cardboard',
+        category: 'paper',
+        price: 12,
+        availableKg: 850,
+        location: 'Navi Mumbai, MH',
+        seller: 'Eco Paper Recycling',
+        rating: 4.4,
+        image: 'https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        id: 's5',
+        title: '💻 Old Circuit Boards & E-Waste',
+        category: 'ewaste',
+        price: 210,
+        availableKg: 180,
+        location: 'Bangalore, KA',
+        seller: 'E-Waste Solutions',
+        rating: 4.9,
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        id: 's6',
+        title: '🟡 Yellow Brass Fittings & Scrap',
+        category: 'metal',
+        price: 310,
+        availableKg: 300,
+        location: 'Mumbai, MH',
+        seller: 'City Metal Scrap',
+        rating: 4.7,
+        image: 'https://images.unsplash.com/photo-1590709282712-4f7c7e5b3b13?auto=format&fit=crop&w=800&q=80'
+      }
+    ];
+
+    // Global State Initializers
+    let scrapListings = JSON.parse(localStorage.getItem('scrapListings')) || DEFAULT_SCRAP_ITEMS;
+    let cart = JSON.parse(localStorage.getItem('scrapCart')) || [];
+    let currentCategory = 'all';
+
+    function seedAdminDemoData() {
+      if (!localStorage.getItem('registeredUsers')) {
+        localStorage.setItem('registeredUsers', JSON.stringify([
+          {id:'USR-1001',name:'Rajesh Kumar',email:'rajesh@example.com',phone:'9876543210',status:'Active',registeredAt:'20/08/2026, 10:30 AM'},
+          {id:'USR-1002',name:'Priya Sharma',email:'priya@example.com',phone:'9820123456',status:'Active',registeredAt:'20/08/2026, 12:15 PM'},
+          {id:'USR-1003',name:'Amit Patel',email:'amit@example.com',phone:'9812345678',status:'Active',registeredAt:'21/08/2026, 09:40 AM'}
+        ]));
+      }
+      if (!localStorage.getItem('loginHistory')) {
+        localStorage.setItem('loginHistory', JSON.stringify([
+          {email:'rajesh@example.com',name:'Rajesh Kumar',status:'Login Successful',date:'21/08/2026, 10:12 AM'},
+          {email:'priya@example.com',name:'Priya Sharma',status:'Login Successful',date:'21/08/2026, 11:05 AM'}
+        ]));
+      }
+      if (!localStorage.getItem('mySalesListings')) {
+        localStorage.setItem('mySalesListings', JSON.stringify([
+          {saleId:'SALE-1001',date:'21/08/2026, 09:55 AM',sellerId:'USR-1001',seller:'Rajesh Kumar',sellerEmail:'rajesh@example.com',material:'Heavy Copper Wire Scrap',quantityKg:150,ratePerKg:450,estimatedPayout:67500,address:'Andheri East, Mumbai, MH',details:'Clean copper wire, sorted',status:'Confirmed',listingId:'s1'},
+          {saleId:'SALE-1002',date:'21/08/2026, 12:20 PM',sellerId:'USR-1002',seller:'Priya Sharma',sellerEmail:'priya@example.com',material:'Aluminium Sheet Scrap',quantityKg:300,ratePerKg:120,estimatedPayout:36000,address:'Hinjewadi, Pune, MH',details:'Sorted aluminium sheets',status:'Pickup Requested',listingId:'s2'},
+          {saleId:'SALE-1003',date:'21/08/2026, 03:10 PM',sellerId:'USR-1003',seller:'Amit Patel',sellerEmail:'amit@example.com',material:'E-Waste Circuit Boards',quantityKg:80,ratePerKg:210,estimatedPayout:16800,address:'Thane West, MH',details:'Mixed circuit boards and computer parts',status:'Collected',listingId:'s5'}
+        ]));
+      }
+    }
+
+
+    // Backend API Integration Layer
+    async function apiCall(endpoint, options = {}) {
+      options.credentials = 'include';
+      try {
+        const res = await fetch(endpoint, options);
+        const data = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        return { ok: false, error: err };
+      }
+    }
+
+    async function syncBackendData() {
+      try {
+        // 1. Current user session
+        const meRes = await apiCall('/api/me');
+        if (meRes.ok && meRes.data && meRes.data.loggedIn && meRes.data.user) {
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('scrapUser', JSON.stringify(meRes.data.user));
+          if (meRes.data.isAdmin) {
+            localStorage.setItem('adminLoggedIn', 'true');
+          }
+          updateAuthUI();
+        }
+
+        // 2. Fetch live listings
+        const listRes = await apiCall('/api/listings');
+        if (listRes.ok && listRes.data && listRes.data.listings && listRes.data.listings.length > 0) {
+          scrapListings = listRes.data.listings;
+          localStorage.setItem('scrapListings', JSON.stringify(scrapListings));
+          filterScrapListings();
+        }
+
+        // 3. Fetch user purchases and sales
+        const [purchasesRes, salesRes] = await Promise.all([
+          apiCall('/api/my-purchases'),
+          apiCall('/api/my-sales')
+        ]);
+        if (purchasesRes.ok && purchasesRes.data && purchasesRes.data.records) {
+          localStorage.setItem('myOrders', JSON.stringify(purchasesRes.data.records));
+        }
+        if (salesRes.ok && salesRes.data && salesRes.data.records) {
+          localStorage.setItem('mySalesListings', JSON.stringify(salesRes.data.records));
+        }
+        renderMyOrders();
+      } catch (err) {
+        console.warn('Backend sync note:', err);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      seedAdminDemoData();
+      // Save initial defaults if missing
+      if (!localStorage.getItem('scrapListings')) {
+        localStorage.setItem('scrapListings', JSON.stringify(DEFAULT_SCRAP_ITEMS));
+      }
+      
+      updateAuthUI();
+      renderScrapGrid();
+      updateCartUI();
+      renderMyOrders();
+
+      // Sync live data from Flask backend SQLite database
+      syncBackendData();
+
+      // Pre-set date for checkout input
+      const dateInput = document.getElementById('checkoutDate');
+      if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+      }
+    });
+
+    /* Toast Notification System (Replaces alert) */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-slate-900 text-white border-l-4 border-brand-500' :
+                      type === 'error' ? 'bg-red-900 text-white border-l-4 border-red-500' :
+                      'bg-blue-900 text-white border-l-4 border-blue-500';
+
+      const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-brand-400"></i>' :
+                   type === 'error' ? '<i class="fa-solid fa-circle-xmark text-red-400"></i>' :
+                   '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+
+      toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs sm:text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
+      toast.innerHTML = `${icon} <span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* ================= IMAGE UPLOAD HELPERS ================= */
+    // Compresses uploaded photos before saving them to localStorage.
+    // This keeps the single-file HTML demo from filling browser storage too quickly.
+    function readImageFile(file, maxSize = 900, quality = 0.78) {
+      return new Promise((resolve, reject) => {
+        if (!file) return resolve('');
+        if (!file.type || !file.type.startsWith('image/')) {
+          reject(new Error('Please select an image file.'));
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => reject(new Error('Could not read the selected image.'));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error('Could not read the selected file.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function getFileInputImage(id) {
+      const input = document.getElementById(id);
+      return input && input.files && input.files[0] ? await readImageFile(input.files[0]) : '';
+    }
+
+    /* Auth & User Management */
+    function updateAuthUI() {
+      const authContainer = document.getElementById('authNavContainer');
+      const loggedIn = localStorage.getItem('loggedIn') === 'true';
+      const user = JSON.parse(localStorage.getItem('scrapUser'));
+
+      if (loggedIn && user) {
+        authContainer.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="text-right hidden sm:block">
+              <span class="block text-xs font-bold text-slate-800">${user.name}</span>
+              <span class="block text-[10px] text-brand-600 font-semibold">Verified Trader</span>
+            </div>
+            <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50 border border-red-200 rounded-lg transition flex items-center gap-1">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+          </div>
+        `;
+      } else {
+        authContainer.innerHTML = `
+          <button onclick="openAuthModal('login')" class="px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-brand-600 transition">Login</button>
+          <button onclick="openAuthModal('register')" class="px-3.5 py-1.5 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm transition">Register</button>
+        `;
+      }
+    }
+
+    function openAuthModal(tab = 'login') {
+      document.getElementById('authModal').classList.remove('hidden');
+      switchAuthTab(tab);
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const tabLoginBtn = document.getElementById('tabLoginBtn');
+      const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        tabLoginBtn.className = "flex-1 py-3.5 text-sm font-bold text-brand-600 border-b-2 border-brand-600";
+        tabRegisterBtn.className = "flex-1 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-700";
+      } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        tabRegisterBtn.className = "flex-1 py-3.5 text-sm font-bold text-brand-600 border-b-2 border-brand-600";
+        tabLoginBtn.className = "flex-1 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-700";
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const phone = document.getElementById('registerPhone').value.trim();
+      const pass = document.getElementById('registerPassword').value;
+      const confirmPass = document.getElementById('confirmPassword').value;
+
+      if (pass !== confirmPass) {
+        showToast("Passwords do not match!", "error");
+        return;
+      }
+
+      let profilePhoto = '';
+      try {
+        profilePhoto = await getFileInputImage('registerPhoto');
+      } catch (err) {
+        showToast(err.message, 'error');
+        return;
+      }
+
+      // Try Backend Registration
+      const res = await apiCall('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password: pass, photo: profilePhoto })
+      });
+
+      if (res.data && res.data.success) {
+        localStorage.setItem('scrapUser', JSON.stringify(res.data.user));
+        localStorage.setItem('loggedIn', 'true');
+        showToast(res.data.message || `Welcome ${name}! Account created.`);
+        closeAuthModal();
+        updateAuthUI();
+        document.getElementById('registerForm').reset();
+        syncBackendData();
+        return;
+      } else if (res.data && res.data.message) {
+        showToast(res.data.message, 'error');
+        return;
+      }
+
+      // Fallback to local storage if offline
+      const newUser = {
+        id: 'USR-' + Date.now(),
+        name, email, phone, password: pass,
+        photo: profilePhoto,
+        status: 'Active',
+        registeredAt: new Date().toLocaleString()
+      };
+
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      if (registeredUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+        showToast("An account with this email already exists.", "error");
+        return;
+      }
+      registeredUsers.unshift(newUser);
+      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      localStorage.setItem('scrapUser', JSON.stringify(newUser));
+      localStorage.setItem('loggedIn', 'true');
+      
+      const loginHistory = JSON.parse(localStorage.getItem('loginHistory')) || [];
+      loginHistory.unshift({
+        email, name,
+        status: 'Registered & Logged In',
+        date: new Date().toLocaleString()
+      });
+      localStorage.setItem('loginHistory', JSON.stringify(loginHistory.slice(0, 100)));
+
+      showToast(`Welcome ${name}! Account created successfully.`);
+      closeAuthModal();
+      updateAuthUI();
+      document.getElementById('registerForm').reset();
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+
+      // Try Backend Login
+      const res = await apiCall('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
+
+      if (res.data && res.data.success) {
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('scrapUser', JSON.stringify(res.data.user));
+        if (res.data.isAdmin) {
+          localStorage.setItem('adminLoggedIn', 'true');
+        }
+        showToast(res.data.message || `Welcome back, ${res.data.user.name}!`);
+        closeAuthModal();
+        updateAuthUI();
+        document.getElementById('loginForm').reset();
+        syncBackendData();
+        return;
+      } else if (res.data && res.data.message) {
+        showToast(res.data.message, 'error');
+        return;
+      }
+
+      // Fallback to local storage if offline
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const savedUser = registeredUsers.find(u =>
+        String(u.email).toLowerCase() === email.toLowerCase() &&
+        u.password === pass
+      );
+
+      if (!savedUser) {
+        showToast("Invalid email or password. Please register first if you do not have an account.", "error");
+        return;
+      }
+
+      if (savedUser.status === 'Blocked') {
+        showToast("This account is blocked by the admin.", "error");
+        return;
+      }
+
+      if (email.toLowerCase() === String(savedUser.email).toLowerCase() && pass === savedUser.password) {
+        localStorage.setItem('loggedIn', 'true');
+
+        const loginHistory = JSON.parse(localStorage.getItem('loginHistory')) || [];
+        loginHistory.unshift({
+          email: email,
+          name: savedUser.name,
+          status: 'Login Successful',
+          date: new Date().toLocaleString()
+        });
+        localStorage.setItem('loginHistory', JSON.stringify(loginHistory.slice(0, 100)));
+
+        showToast(`Welcome back, ${savedUser.name}!`);
+        closeAuthModal();
+        updateAuthUI();
+        document.getElementById('loginForm').reset();
+      } else {
+        showToast("Invalid email or password credentials.", "error");
+      }
+    }
+
+    async function handleLogout() {
+      await apiCall('/api/logout', { method: 'POST' });
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('scrapUser');
+      localStorage.removeItem('adminLoggedIn');
+      showToast("Logged out successfully.", "info");
+      updateAuthUI();
+      renderMyOrders();
+    }
+
+    /* Marketplace Filtering & Rendering */
+    function setCategoryFilter(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = "cat-btn active px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-brand-600 text-white shadow-sm";
+        } else {
+          btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-100";
+        }
+      });
+      filterScrapListings();
+    }
+
+    function filterScrapListings() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const sortBy = document.getElementById('sortSelect').value;
+
+      let filtered = scrapListings.filter(item => {
+        const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
+        const matchesSearch = item.title.toLowerCase().includes(query) || 
+                              item.location.toLowerCase().includes(query) ||
+                              item.seller.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (sortBy === 'price-low') filtered.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
+      if (sortBy === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+      renderScrapGrid(filtered);
+    }
+
+    function renderScrapGrid(items = scrapListings) {
+      const container = document.getElementById('scrapGrid');
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 p-8">
+            <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-300"></i>
+            <p class="font-bold text-slate-700">No scrap materials found matching your criteria.</p>
+            <p class="text-xs mt-1">Try tweaking your search term or filter category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition duration-300 overflow-hidden flex flex-col justify-between group";
+        
+        card.innerHTML = `
+          <div>
+            <div class="relative h-48 overflow-hidden bg-slate-100">
+              <img src="${item.image}" alt="${item.title}" 
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x400/1e293b/22c55e?text=Scrap+Material';" 
+                   class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                📍 ${item.location}
+              </span>
+            </div>
+            
+            <div class="p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md">
+                  ${item.category.toUpperCase()}
+                </span>
+                <span class="text-xs font-bold text-amber-500 flex items-center gap-1">
+                  <i class="fa-solid fa-star"></i> ${item.rating}
+                </span>
+              </div>
+
+              <h3 class="font-extrabold text-slate-900 text-base leading-snug">${item.title}</h3>
+              
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-black text-brand-600">₹${item.price}</span>
+                <span class="text-xs font-medium text-slate-500">/ kg</span>
+              </div>
+
+              <div class="text-xs text-slate-500 space-y-1 pt-2 border-t border-slate-100">
+                <p><i class="fa-solid fa-boxes-stacked w-4"></i> Available: <strong class="text-slate-800">${item.availableKg} kg</strong></p>
+                <p><i class="fa-solid fa-user-check w-4"></i> Seller: <span class="text-slate-800 font-medium">${item.seller}</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 pt-0">
+            <button onclick="addToCart('${item.id}')" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* Cart Operations */
+    function addToCart(itemId) {
+      const item = scrapListings.find(s => s.id === itemId);
+      if (!item) return;
+
+      const existing = cart.find(c => c.id === itemId);
+      if (existing) {
+        existing.qtyKg += 10; // Increment default bulk
+      } else {
+        cart.push({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          qtyKg: 20, // default initial kg
+          image: item.image
+        });
+      }
+
+      saveCart();
+      updateCartUI();
+      showToast(`Added <strong>${item.title}</strong> to cart!`);
+    }
+
+    function updateCartQty(itemId, delta) {
+      const cartItem = cart.find(c => c.id === itemId);
+      if (!cartItem) return;
+
+      cartItem.qtyKg += delta;
+      if (cartItem.qtyKg <= 0) {
+        cart = cart.filter(c => c.id !== itemId);
+      }
+      saveCart();
+      updateCartUI();
+    }
+
+    function removeFromCart(itemId) {
+      cart = cart.filter(c => c.id !== itemId);
+      saveCart();
+      updateCartUI();
+      showToast("Item removed from cart", "info");
+    }
+
+    function saveCart() {
+      localStorage.setItem('scrapCart', JSON.stringify(cart));
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      const drawerItems = document.getElementById('cartDrawerItems');
+      const subtotalEl = document.getElementById('cartSubtotal');
+      const totalEl = document.getElementById('cartTotal');
+
+      badge.textContent = cart.length;
+
+      if (cart.length === 0) {
+        drawerItems.innerHTML = `
+          <div class="py-12 text-center text-slate-400">
+            <i class="fa-solid fa-basket-shopping text-4xl mb-2 text-slate-300"></i>
+            <p class="font-bold text-slate-600">Your scrap cart is empty</p>
+            <p class="text-xs">Add items from the marketplace to get started.</p>
+          </div>
+        `;
+        subtotalEl.textContent = '0';
+        totalEl.textContent = '0';
+        return;
+      }
+
+      let grandTotal = 0;
+      drawerItems.innerHTML = '';
+
+      cart.forEach(item => {
+        const itemTotal = item.price * item.qtyKg;
+        grandTotal += itemTotal;
+
+        const div = document.createElement('div');
+        div.className = "flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200";
+        div.innerHTML = `
+          <img src="${item.image}" class="w-14 h-14 rounded-lg object-cover shrink-0">
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-slate-800 text-xs truncate">${item.title}</h4>
+            <p class="text-[11px] text-slate-500">₹${item.price} / kg</p>
+            <div class="flex items-center gap-2 mt-1">
+              <button onclick="updateCartQty('${item.id}', -5)" class="w-5 h-5 bg-white border border-slate-300 rounded text-xs font-bold hover:bg-slate-100">-</button>
+              <span class="text-xs font-extrabold">${item.qtyKg} kg</span>
+              <button onclick="updateCartQty('${item.id}', 5)" class="w-5 h-5 bg-white border border-slate-300 rounded text-xs font-bold hover:bg-slate-100">+</button>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-black text-brand-600 text-sm">₹${itemTotal}</p>
+            <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs hover:underline mt-1">Remove</button>
+          </div>
+        `;
+        drawerItems.appendChild(div);
+      });
+
+      subtotalEl.textContent = grandTotal;
+      totalEl.textContent = grandTotal;
+    }
+
+    function toggleCartDrawer() {
+      const drawer = document.getElementById('cartDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) {
+        showToast("Cart is empty!", "error");
+        return;
+      }
+      if (localStorage.getItem('loggedIn') !== 'true') {
+        showToast("Please login or register to complete order.", "error");
+        openAuthModal('login');
+        return;
+      }
+      toggleCartDrawer();
+      document.getElementById('checkoutModal').classList.remove('hidden');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+    }
+
+    async function handleCheckoutSubmit(e) {
+      e.preventDefault();
+      const address = document.getElementById('checkoutAddress').value;
+      const date = document.getElementById('checkoutDate').value;
+      const slot = document.getElementById('checkoutSlot').value;
+      const user = JSON.parse(localStorage.getItem('scrapUser'));
+
+      let orderPhoto = '';
+      try {
+        orderPhoto = await getFileInputImage('checkoutPhoto');
+      } catch (err) {
+        showToast(err.message, 'error');
+        return;
+      }
+
+      const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qtyKg), 0);
+
+      // Try Backend Order
+      const res = await apiCall('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address,
+          pickupDate: date,
+          slot,
+          items: cart,
+          total: totalAmount,
+          photo: orderPhoto,
+          buyerName: user?.name || '',
+          buyerEmail: user?.email || ''
+        })
+      });
+
+      if (res.data && res.data.success) {
+        cart = [];
+        saveCart();
+        updateCartUI();
+        document.getElementById('checkoutPhoto')?.form?.reset?.();
+        closeCheckoutModal();
+        showToast(res.data.message || `Order scheduled!`);
+        await syncBackendData();
+        document.getElementById('myOrders').scrollIntoView({ behavior: 'smooth' });
+        return;
+      } else if (res.data && res.data.message) {
+        showToast(res.data.message, 'error');
+        return;
+      }
+
+      // Offline fallback
+      const orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+      const newOrder = {
+        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleDateString(),
+        pickupDate: date,
+        slot: slot,
+        address: address,
+        items: [...cart],
+        total: totalAmount,
+        photo: orderPhoto,
+        buyerName: user?.name || '',
+        buyerEmail: user?.email || '',
+        status: 'Scheduled for Pickup'
+      };
+
+      orders.unshift(newOrder);
+      localStorage.setItem('myOrders', JSON.stringify(orders));
+
+      // Clear Cart
+      cart = [];
+      saveCart();
+      updateCartUI();
+      document.getElementById('checkoutPhoto')?.form?.reset?.();
+      closeCheckoutModal();
+
+      showToast(`Order scheduled! Pickup ID: ${newOrder.orderId}`);
+      renderMyOrders();
+
+      // Smooth scroll to activity
+      document.getElementById('myOrders').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* Sell Scrap Functionality */
+    function calculateSellEstimate() {
+      const weight = parseFloat(document.getElementById('weight').value) || 0;
+      const price = parseFloat(document.getElementById('sellPrice').value) || 0;
+      const box = document.getElementById('estimateBox');
+      const display = document.getElementById('estimatedTotalDisplay');
+
+      if (weight > 0 && price > 0) {
+        box.classList.remove('hidden');
+        display.textContent = (weight * price).toLocaleString();
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    async function handleSellSubmit(e) {
+      e.preventDefault();
+
+      if (localStorage.getItem('loggedIn') !== 'true') {
+        showToast("Please login or register to post scrap listings.", "error");
+        openAuthModal('login');
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem('scrapUser'));
+      const material = document.getElementById('material').value;
+      const weight = parseFloat(document.getElementById('weight').value);
+      const price = parseFloat(document.getElementById('sellPrice').value);
+      const address = document.getElementById('address').value;
+      const details = document.getElementById('details').value;
+
+      let salePhoto = '';
+      try {
+        salePhoto = await getFileInputImage('sellPhoto');
+      } catch (err) {
+        showToast(err.message, 'error');
+        return;
+      }
+
+      // Classify Category automatically
+      let cat = 'metal';
+      const mLower = material.toLowerCase();
+      if (mLower.includes('iron') || mLower.includes('steel')) cat = 'ferrous';
+      else if (mLower.includes('paper') || mLower.includes('cardboard') || mLower.includes('plastic')) cat = 'paper';
+      else if (mLower.includes('e-waste') || mLower.includes('circuit') || mLower.includes('computer')) cat = 'ewaste';
+
+      // Try Backend Sell
+      const res = await apiCall('/api/sell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          material,
+          category: cat,
+          quantity: weight,
+          price: price,
+          address,
+          details,
+          photo: salePhoto,
+          seller: user ? user.name : 'Verified Seller',
+          sellerEmail: user ? user.email : ''
+        })
+      });
+
+      if (res.data && res.data.success) {
+        showToast(res.data.message || "Scrap listing published & pickup requested successfully!");
+        document.getElementById('sellForm').reset();
+        document.getElementById('estimateBox').classList.add('hidden');
+        await syncBackendData();
+        return;
+      } else if (res.data && res.data.message) {
+        showToast(res.data.message, 'error');
+        return;
+      }
+
+      // Offline fallback
+      const newListing = {
+        id: 'user-' + Date.now(),
+        title: material,
+        category: cat,
+        price: price,
+        availableKg: weight,
+        location: address,
+        seller: user ? user.name : 'Verified Seller',
+        rating: 5.0,
+        image: salePhoto || 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80',
+        photo: salePhoto
+      };
+
+      // Add to marketplace
+      scrapListings.unshift(newListing);
+      localStorage.setItem('scrapListings', JSON.stringify(scrapListings));
+
+      // Add to user sales activity
+      const saleRecord = {
+        saleId: 'SALE-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleString(),
+        sellerId: user?.id || 'GUEST',
+        seller: user?.name || 'Verified Seller',
+        sellerEmail: user?.email || '',
+        material, quantityKg: weight, ratePerKg: price,
+        estimatedPayout: weight * price,
+        address, details,
+        photo: salePhoto,
+        status: 'Pickup Requested',
+        listingId: newListing.id
+      };
+
+      const sales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+      sales.unshift(saleRecord);
+      localStorage.setItem('mySalesListings', JSON.stringify(sales));
+
+      showToast("Scrap listing published & pickup requested successfully!");
+      document.getElementById('sellForm').reset();
+      document.getElementById('estimateBox').classList.add('hidden');
+
+      filterScrapListings();
+      renderMyOrders();
+    }
+
+    /* Activity & Orders Dashboard Renderer */
+    function renderMyOrders() {
+      const purchasesContainer = document.getElementById('myPurchasesList');
+      const salesContainer = document.getElementById('myListingsContainer');
+
+      const myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
+      const mySales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+
+      // Render Orders
+      if (myOrders.length === 0) {
+        purchasesContainer.innerHTML = '<p class="text-slate-400 py-3 italic">No scrap purchases yet.</p>';
+      } else {
+        purchasesContainer.innerHTML = '';
+        myOrders.forEach(ord => {
+          const div = document.createElement('div');
+          div.className = "p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1";
+          div.innerHTML = `
+            <div class="flex justify-between font-bold text-slate-800">
+              <span>${ord.orderId}</span>
+              <span class="text-brand-600">₹${ord.total}</span>
+            </div>
+            <p class="text-slate-500 text-[11px]">Pickup Date: ${ord.pickupDate} (${ord.slot})</p>
+            <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 font-bold rounded text-[10px]">${ord.status}</span>
+          `;
+          purchasesContainer.appendChild(div);
+        });
+      }
+
+      // Render User Listings
+      if (mySales.length === 0) {
+        salesContainer.innerHTML = '<p class="text-slate-400 py-3 italic">No posted scrap listings yet.</p>';
+      } else {
+        salesContainer.innerHTML = '';
+        mySales.forEach(sale => {
+          const div = document.createElement('div');
+          div.className = "p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1";
+          div.innerHTML = `
+            <div class="flex gap-3 items-center">
+              ${sale.photo ? `<img src="${sale.photo}" class="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0" alt="Scrap photo">` : ''}
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between font-bold text-slate-800 gap-2">
+                  <span>${sale.title}</span>
+                  <span class="text-brand-600">₹${sale.price}/kg</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-slate-500 text-[11px]">Weight: ${sale.availableKg} kg • Location: ${sale.location}</p>
+            <span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">Active in Marketplace</span>
+          `;
+          salesContainer.appendChild(div);
+        });
+      }
+    }
+
+    /* ================= ADMIN PANEL ================= */
+    // NOTE: This is a front-end demo admin panel using localStorage.
+    // For production, authentication and permissions must be handled by a backend.
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = 'admin123';
+
+    function openAdminLogin() {
+      if (localStorage.getItem('adminLoggedIn') === 'true') {
+        openAdminPanel();
+      } else {
+        document.getElementById('adminLoginModal').classList.remove('hidden');
+      }
+    }
+
+    function closeAdminLogin() {
+      document.getElementById('adminLoginModal').classList.add('hidden');
+    }
+
+    async function fetchAdminData() {
+      const [usersRes, ordersRes, salesRes, loginsRes, listingsRes] = await Promise.all([
+        apiCall('/api/admin/users'),
+        apiCall('/api/admin/orders'),
+        apiCall('/api/admin/sales'),
+        apiCall('/api/admin/logins'),
+        apiCall('/api/listings')
+      ]);
+      if (usersRes.data && usersRes.data.users) localStorage.setItem('registeredUsers', JSON.stringify(usersRes.data.users));
+      if (ordersRes.data && ordersRes.data.orders) localStorage.setItem('myOrders', JSON.stringify(ordersRes.data.orders));
+      if (salesRes.data && salesRes.data.sales) localStorage.setItem('mySalesListings', JSON.stringify(salesRes.data.sales));
+      if (loginsRes.data && loginsRes.data.logins) localStorage.setItem('loginHistory', JSON.stringify(loginsRes.data.logins));
+      if (listingsRes.data && listingsRes.data.listings) {
+        scrapListings = listingsRes.data.listings;
+        localStorage.setItem('scrapListings', JSON.stringify(scrapListings));
+      }
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value;
+
+      const res = await apiCall('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (res.data && res.data.success) {
+        localStorage.setItem('adminLoggedIn', 'true');
+        closeAdminLogin();
+        await openAdminPanel();
+        showToast('Admin login successful.');
+        return;
+      }
+
+      if ((username === ADMIN_USERNAME && password === ADMIN_PASSWORD) || (username.toLowerCase() === 'admin@scrapex.com' && password === 'Admin@123')) {
+        localStorage.setItem('adminLoggedIn', 'true');
+        closeAdminLogin();
+        await openAdminPanel();
+        showToast('Admin login successful.');
+      } else {
+        showToast(res.data?.message || 'Invalid admin credentials.', 'error');
+      }
+    }
+
+    async function openAdminPanel() {
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      await fetchAdminData();
+      renderAdminPanel();
+    }
+
+    async function adminLogout() {
+      await apiCall('/api/admin/logout', { method: 'POST' });
+      localStorage.removeItem('adminLoggedIn');
+      closeAdminPanel();
+      showToast('Admin logged out.', 'info');
+    }
+
+    function showAdminTable(tableId) {
+      document.querySelectorAll('.admin-data-table').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tableId).classList.remove('hidden');
+
+      document.querySelectorAll('.admin-table-btn').forEach(btn => {
+        btn.className = "admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200";
+      });
+      const active = Array.from(document.querySelectorAll('.admin-table-btn'))
+        .find(btn => btn.getAttribute('onclick') === `showAdminTable('${tableId}')`);
+      if (active) active.className = "admin-table-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white";
+    }
+
+    function renderAdminPanel() {
+      const orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+      const currentUser = JSON.parse(localStorage.getItem('scrapUser'));
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || (currentUser ? [currentUser] : []);
+      const allListings = JSON.parse(localStorage.getItem('scrapListings')) || [];
+      const loginHistory = JSON.parse(localStorage.getItem('loginHistory')) || [];
+      const sales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+
+      document.getElementById('adminStatListings').textContent = allListings.length;
+      document.getElementById('adminStatOrders').textContent = orders.length;
+      document.getElementById('adminStatUsers').textContent = registeredUsers.length;
+      document.getElementById('adminStatRevenue').textContent =
+        '₹' + orders.reduce((sum, o) => sum + Number(o.total || 0), 0).toLocaleString();
+
+      // LOGIN TABLE
+      const loginBody = document.getElementById('adminLoginTableBody');
+      if (loginHistory.length) {
+        loginBody.innerHTML = loginHistory.map((l, i) => `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-3">${i + 1}</td>
+            <td class="p-3 font-medium">${escapeHtml(l.email)}</td>
+            <td class="p-3">${escapeHtml(l.name || '—')}</td>
+            <td class="p-3">
+              <select onchange="adminUpdateLoginStatus(${i}, this.value)" class="px-2 py-1.5 border border-slate-300 rounded-lg bg-white">
+                ${['Login Successful','Login Failed','Registered & Logged In','Logout'].map(st => `<option ${l.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+              </select>
+            </td>
+            <td class="p-3 text-slate-500">${escapeHtml(l.date || '')}</td>
+            <td class="p-3">
+              <button onclick="adminDeleteLogin(${i})" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>`).join('');
+      } else {
+        loginBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">No login records yet.</td></tr>`;
+      }
+
+      // REGISTERED TABLE
+      const registeredBody = document.getElementById('adminRegisteredTableBody');
+      if (registeredUsers.length) {
+        registeredBody.innerHTML = registeredUsers.map((u, i) => `
+          <tr class="border-b border-slate-100 hover:bg-slate-50 align-top">
+            <td class="p-3">${i + 1}</td>
+            <td class="p-3">${u.photo ? `<img src="${u.photo}" class="w-10 h-10 rounded-lg object-cover border border-slate-200" alt="User photo">` : '<span class="text-slate-400">—</span>'}</td>
+            <td class="p-3 font-bold">${escapeHtml(u.name)}</td>
+            <td class="p-3">${escapeHtml(u.email)}</td>
+            <td class="p-3">${escapeHtml(u.phone || '—')}</td>
+            <td class="p-3">
+              <select onchange="adminUpdateRegisteredStatus(${i}, this.value)" class="px-2 py-1.5 border border-slate-300 rounded-lg bg-white">
+                ${['Active','Pending','Blocked'].map(st => `<option ${u.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+              </select>
+              <div class="text-[10px] text-slate-400 mt-1">${escapeHtml(u.registeredAt || '')}</div>
+            </td>
+            <td class="p-3">
+              <button onclick="adminDeleteRegistered(${i})" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>`).join('');
+      } else {
+        registeredBody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No registered users yet.</td></tr>`;
+      }
+
+      // BUY / ORDERS TABLE
+      const buyBody = document.getElementById('adminBuyTableBody');
+      if (orders.length) {
+        buyBody.innerHTML = orders.map((o, index) => {
+          const itemNames = (o.items || []).map(i => `${i.title} (${i.qtyKg}kg)`).join(', ');
+          return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50 align-top">
+              <td class="p-3 font-bold">${escapeHtml(o.orderId)}</td>
+              <td class="p-3">${o.photo ? `<img src="${o.photo}" class="w-10 h-10 rounded-lg object-cover border border-slate-200" alt="Order photo">` : '<span class="text-slate-400">—</span>'}</td>
+              <td class="p-3">${escapeHtml(o.pickupDate || o.date || '')}</td>
+              <td class="p-3 max-w-xs">${escapeHtml(itemNames || '—')}</td>
+              <td class="p-3 font-black text-brand-600">₹${Number(o.total || 0).toLocaleString()}</td>
+              <td class="p-3 max-w-xs">${escapeHtml(o.address || '—')}</td>
+              <td class="p-3">
+                <select onchange="adminUpdateOrderStatus(${index}, this.value)" class="px-2 py-2 border border-slate-300 rounded-lg bg-white">
+                  ${['Scheduled for Pickup','Confirmed','Out for Delivery','Completed','Cancelled']
+                    .map(st => `<option ${o.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                </select>
+              </td>
+              <td class="p-3">
+                <button onclick="adminDeleteOrder(${index})" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>`;
+        }).join('');
+      } else {
+        buyBody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">No buy/order records yet.</td></tr>`;
+      }
+
+      // LISTINGS TABLE
+      const listingBody = document.getElementById('adminListingTableBody');
+      if (allListings.length) {
+        listingBody.innerHTML = allListings.map(item => `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-3 font-mono text-[10px]">${escapeHtml(item.id)}</td>
+            <td class="p-3 font-bold">${escapeHtml(item.title)}</td>
+            <td class="p-3">${escapeHtml(item.seller)}</td>
+            <td class="p-3 font-bold text-brand-600">₹${Number(item.price || 0).toLocaleString()}</td>
+            <td class="p-3">${escapeHtml(item.availableKg)} kg</td>
+            <td class="p-3">
+              <button onclick="adminDeleteListing('${item.id}')" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>`).join('');
+      } else {
+        listingBody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No listings.</td></tr>`;
+      }
+
+      // SALE SCRAP TABLE
+      const saleBody = document.getElementById('adminSaleTableBody');
+      const saleCount = document.getElementById('adminSaleCount');
+      if (saleCount) saleCount.textContent = `${sales.length} Sale${sales.length === 1 ? '' : 's'}`;
+
+      if (sales.length) {
+        saleBody.innerHTML = sales.map((s, index) => `
+          <tr class="border-b border-slate-100 hover:bg-slate-50 align-top">
+            <td class="p-3 font-mono text-[10px]">${escapeHtml(s.saleId || '')}</td>
+            <td class="p-3">${s.photo ? `<img src="${s.photo}" class="w-10 h-10 rounded-lg object-cover border border-slate-200" alt="Sale photo">` : '<span class="text-slate-400">—</span>'}</td>
+            <td class="p-3">${escapeHtml(s.date || '')}</td>
+            <td class="p-3 font-bold">${escapeHtml(s.seller || '—')}<div class="text-[10px] text-slate-400">${escapeHtml(s.sellerEmail || '')}</div></td>
+            <td class="p-3 font-bold">${escapeHtml(s.material || s.title || '—')}</td>
+            <td class="p-3">${Number(s.quantityKg ?? s.availableKg ?? 0).toLocaleString()} kg</td>
+            <td class="p-3 font-bold text-brand-600">₹${Number(s.ratePerKg ?? s.price ?? 0).toLocaleString()}</td>
+            <td class="p-3 font-black text-emerald-600">₹${Number(s.estimatedPayout ?? 0).toLocaleString()}</td>
+            <td class="p-3 max-w-xs">${escapeHtml(s.address || s.location || '—')}</td>
+            <td class="p-3">
+              <select onchange="adminUpdateSaleStatus(${index}, this.value)" class="px-2 py-2 border border-slate-300 rounded-lg bg-white">
+                ${['Pickup Requested','Confirmed','Collected','Paid','Cancelled'].map(st => `<option ${s.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+              </select>
+            </td>
+            <td class="p-3">
+              <button onclick="adminDeleteSale(${index})" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg font-bold">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>`).join('');
+      } else {
+        saleBody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400">No sale scrap records yet.</td></tr>`;
+      }
+
+      const headerButton = document.querySelector('#adminPanel header button');
+      if (headerButton) {
+        headerButton.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> Admin Logout';
+        headerButton.onclick = adminLogout;
+      }
+    }
+
+    /* ADMIN ADD / UPDATE OPERATION DATA */
+    function openAdminDataModal(type = 'login') {
+      const modal = document.getElementById('adminDataModal');
+      const select = document.getElementById('adminDataType');
+      if (!modal || !select) return;
+      select.value = type;
+      renderAdminDataFields();
+      modal.classList.remove('hidden');
+    }
+
+    function closeAdminDataModal() {
+      document.getElementById('adminDataModal')?.classList.add('hidden');
+      document.getElementById('adminDataForm')?.reset();
+    }
+
+    function adminInput(id, label, type = 'text', placeholder = '', required = true) {
+      const fileAttrs = type === 'file' ? 'accept="image/*"' : `placeholder="${placeholder}"`;
+      return `<div>
+        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">${label}</label>
+        <input id="${id}" type="${type}" ${required ? 'required' : ''} ${fileAttrs}
+          class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+        ${type === 'file' ? '<p class="text-[10px] text-slate-400 mt-1">Optional • JPG/PNG/WebP</p>' : ''}
+      </div>`;
+    }
+
+    function adminSelect(id, label, options) {
+      return `<div>
+        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">${label}</label>
+        <select id="${id}" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+          ${options.map(x => `<option>${x}</option>`).join('')}
+        </select>
+      </div>`;
+    }
+
+    function renderAdminDataFields() {
+      const type = document.getElementById('adminDataType').value;
+      const box = document.getElementById('adminDataFields');
+      if (!box) return;
+
+      if (type === 'login') {
+        box.innerHTML =
+          adminInput('opEmail', 'Email', 'email', 'user@example.com') +
+          adminInput('opName', 'User Name', 'text', 'Rajesh Kumar') +
+          adminSelect('opStatus', 'Login Status', ['Login Successful','Login Failed','Registered & Logged In','Logout']) +
+          adminInput('opDate', 'Login Date & Time', 'text', new Date().toLocaleString());
+      } else if (type === 'registered') {
+        box.innerHTML =
+          adminInput('opName', 'Full Name', 'text', 'Rajesh Kumar') +
+          adminInput('opEmail', 'Email', 'email', 'rajesh@example.com') +
+          adminInput('opPhone', 'Phone', 'tel', '9876543210') +
+          adminInput('opPassword', 'Password', 'password', 'Password', false) +
+          adminSelect('opStatus', 'Account Status', ['Active','Pending','Blocked']) +
+          adminInput('opDate', 'Registration Date & Time', 'text', new Date().toLocaleString());
+      } else if (type === 'buy') {
+        box.innerHTML =
+          adminInput('opOrderId', 'Order ID', 'text', 'ORD-100001') +
+          adminInput('opDate', 'Order Date', 'text', new Date().toLocaleDateString()) +
+          adminInput('opItems', 'Items', 'text', 'Copper Wire (50kg)') +
+          adminInput('opAmount', 'Amount (₹)', 'number', '22500') +
+          adminInput('opAddress', 'Delivery / Pickup Address', 'text', 'Mumbai, MH') +
+          adminInput('opPhoto', 'Order Photo', 'file', '', false) +
+          adminSelect('opStatus', 'Order Status', ['Scheduled for Pickup','Confirmed','Out for Delivery','Completed','Cancelled']);
+      } else {
+        box.innerHTML =
+          adminInput('opSeller', 'Seller Name', 'text', 'Rajesh Kumar') +
+          adminInput('opSellerEmail', 'Seller Email', 'email', 'rajesh@example.com') +
+          adminInput('opMaterial', 'Scrap Material', 'text', 'Heavy Copper Wire Scrap') +
+          adminInput('opQty', 'Quantity (kg)', 'number', '100') +
+          adminInput('opRate', 'Rate / kg (₹)', 'number', '450') +
+          adminInput('opAddress', 'Pickup Address', 'text', 'Andheri, Mumbai') +
+          adminInput('opPhoto', 'Scrap Photo', 'file', '', false) +
+          adminSelect('opStatus', 'Sale Status', ['Pickup Requested','Confirmed','Collected','Paid','Cancelled']);
+      }
+    }
+
+    async function saveAdminOperationData(e) {
+      e.preventDefault();
+      const type = document.getElementById('adminDataType').value;
+      const value = id => (document.getElementById(id)?.value || '').trim();
+      const now = new Date().toLocaleString();
+
+      if (type === 'login') {
+        const records = JSON.parse(localStorage.getItem('loginHistory')) || [];
+        records.unshift({
+          email: value('opEmail'),
+          name: value('opName'),
+          status: value('opStatus'),
+          date: value('opDate') || now
+        });
+        localStorage.setItem('loginHistory', JSON.stringify(records.slice(0, 100)));
+        showToast('Login record added successfully.');
+      }
+
+      if (type === 'registered') {
+        const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const email = value('opEmail');
+        if (users.some(u => String(u.email).toLowerCase() === email.toLowerCase())) {
+          showToast('This email is already registered.', 'error');
+          return;
+        }
+        users.unshift({
+          id: 'USR-' + Date.now(),
+          name: value('opName'),
+          email,
+          phone: value('opPhone'),
+          password: value('opPassword'),
+          status: value('opStatus'),
+          registeredAt: value('opDate') || now
+        });
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+        showToast('Registration record added successfully.');
+      }
+
+      if (type === 'buy') {
+        const orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+        const itemText = value('opItems') || 'Scrap Material';
+        let operationPhoto = '';
+        try {
+          operationPhoto = await getFileInputImage('opPhoto');
+        } catch (err) {
+          showToast(err.message, 'error');
+          return;
+        }
+        const qtyMatch = itemText.match(/\(([\d.]+)\s*kg\)/i);
+        const qty = qtyMatch ? Number(qtyMatch[1]) : 1;
+        const title = itemText.replace(/\s*\([\d.]+\s*kg\)/i, '').trim();
+        const amount = Number(value('opAmount')) || 0;
+
+        orders.unshift({
+          orderId: value('opOrderId') || ('ORD-' + Date.now()),
+          date: value('opDate') || new Date().toLocaleDateString(),
+          pickupDate: value('opDate') || new Date().toISOString().split('T')[0],
+          slot: 'Admin Added',
+          address: value('opAddress'),
+          items: [{title, qtyKg: qty, price: amount}],
+          total: amount,
+          photo: operationPhoto,
+          buyerName: 'Admin Added',
+          buyerEmail: '',
+          status: value('opStatus')
+        });
+        localStorage.setItem('myOrders', JSON.stringify(orders));
+        showToast('Buy / order record added successfully.');
+      }
+
+      if (type === 'sale') {
+        const qty = Number(value('opQty')) || 0;
+        const rate = Number(value('opRate')) || 0;
+        let operationPhoto = '';
+        try {
+          operationPhoto = await getFileInputImage('opPhoto');
+        } catch (err) {
+          showToast(err.message, 'error');
+          return;
+        }
+        const sales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+
+        sales.unshift({
+          saleId: 'SALE-' + Date.now(),
+          date: now,
+          sellerId: 'ADMIN-ADDED',
+          seller: value('opSeller'),
+          sellerEmail: value('opSellerEmail'),
+          material: value('opMaterial'),
+          quantityKg: qty,
+          ratePerKg: rate,
+          estimatedPayout: qty * rate,
+          address: value('opAddress'),
+          details: 'Added by Admin',
+          photo: operationPhoto,
+          status: value('opStatus'),
+          listingId: ''
+        });
+
+        localStorage.setItem('mySalesListings', JSON.stringify(sales));
+        showToast('Sale scrap record added successfully.');
+      }
+
+      closeAdminDataModal();
+      renderAdminPanel();
+      renderMyOrders();
+    }
+
+    async function adminUpdateLoginStatus(index, status) {
+      const records = JSON.parse(localStorage.getItem('loginHistory')) || [];
+      if (!records[index]) return;
+      records[index].status = status;
+      localStorage.setItem('loginHistory', JSON.stringify(records));
+      if (records[index].id) {
+        await apiCall(`/api/admin/logins/${records[index].id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+      }
+      renderAdminPanel();
+      showToast('Login status updated.');
+    }
+
+    async function adminDeleteLogin(index) {
+      if (!confirm('Delete this login record?')) return;
+      const records = JSON.parse(localStorage.getItem('loginHistory')) || [];
+      const item = records[index];
+      records.splice(index, 1);
+      localStorage.setItem('loginHistory', JSON.stringify(records));
+      if (item && item.id) {
+        await apiCall(`/api/admin/logins/${item.id}`, { method: 'DELETE' });
+      }
+      renderAdminPanel();
+      showToast('Login record deleted.', 'info');
+    }
+
+    async function adminUpdateRegisteredStatus(index, status) {
+      const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      if (!users[index]) return;
+      users[index].status = status;
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+      if (users[index].id && typeof users[index].id === 'number') {
+        await apiCall(`/api/admin/users/${users[index].id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+      }
+      renderAdminPanel();
+      showToast('Registration status updated.');
+    }
+
+    async function adminDeleteRegistered(index) {
+      if (!confirm('Delete this registered user?')) return;
+      const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const item = users[index];
+      users.splice(index, 1);
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+      if (item && item.id && typeof item.id === 'number') {
+        await apiCall(`/api/admin/users/${item.id}`, { method: 'DELETE' });
+      }
+      renderAdminPanel();
+      showToast('Registered user deleted.', 'info');
+    }
+
+    async function adminDeleteOrder(index) {
+      if (!confirm('Delete this buy/order record?')) return;
+      const orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+      const item = orders[index];
+      orders.splice(index, 1);
+      localStorage.setItem('myOrders', JSON.stringify(orders));
+      if (item && item.id) {
+        await apiCall(`/api/admin/orders/${item.id}`, { method: 'DELETE' });
+      }
+      renderAdminPanel();
+      renderMyOrders();
+      showToast('Buy/order record deleted.', 'info');
+    }
+
+    async function adminDeleteListing(id) {
+      if (!confirm('Delete this marketplace listing?')) return;
+      scrapListings = scrapListings.filter(item => item.id !== id);
+      localStorage.setItem('scrapListings', JSON.stringify(scrapListings));
+      await apiCall(`/api/listings/${id}`, { method: 'DELETE' });
+      renderScrapGrid();
+      renderAdminPanel();
+      showToast('Listing deleted.', 'info');
+    }
+
+    async function adminUpdateOrderStatus(index, status) {
+      const orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+      if (!orders[index]) return;
+      orders[index].status = status;
+      localStorage.setItem('myOrders', JSON.stringify(orders));
+      if (orders[index].id) {
+        await apiCall(`/api/admin/orders/${orders[index].id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+      }
+      renderMyOrders();
+      showToast(`Order ${orders[index].orderId} updated to ${status}.`);
+    }
+
+    async function adminUpdateSaleStatus(index, status) {
+      const sales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+      if (!sales[index]) return;
+      sales[index].status = status;
+      localStorage.setItem('mySalesListings', JSON.stringify(sales));
+      if (sales[index].id) {
+        await apiCall(`/api/admin/sales/${sales[index].id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+      }
+      renderAdminPanel();
+      renderMyOrders();
+      showToast(`Sale ${sales[index].saleId || ''} updated to ${status}.`);
+    }
+
+    async function adminDeleteSale(index) {
+      if (!confirm('Delete this sale scrap record?')) return;
+      const sales = JSON.parse(localStorage.getItem('mySalesListings')) || [];
+      if (!sales[index]) return;
+      const item = sales[index];
+      sales.splice(index, 1);
+      localStorage.setItem('mySalesListings', JSON.stringify(sales));
+      if (item && item.id) {
+        await apiCall(`/api/admin/sales/${item.id}`, { method: 'DELETE' });
+      }
+      if (item.listingId) {
+        scrapListings = scrapListings.filter(item => item.id !== item.listingId);
+        localStorage.setItem('scrapListings', JSON.stringify(scrapListings));
+        renderScrapGrid();
+      }
+      renderAdminPanel();
+      renderMyOrders();
+      showToast('Sale record deleted.', 'info');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[ch]));
+    }
+
+    function toggleMobileNav() {
+      const nav = document.getElementById('mobileNav');
+      nav.classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>

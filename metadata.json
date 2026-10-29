@@ -1,0 +1,6 @@
+{
+  "name": "ScrapEx - Circular Waste & Scrap Trading Platform",
+  "description": "Buy and sell recyclable scrap materials connecting local recyclers with businesses for sustainable waste management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
